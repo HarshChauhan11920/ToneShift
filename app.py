@@ -2,6 +2,7 @@ import streamlit as st
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
+from core.prompt_builder import build_prompt
 
 # Load environment variables
 load_dotenv()
@@ -23,6 +24,15 @@ tone = st.selectbox(
     ["Formal", "Casual", "Child-friendly", "Executive Summary"]
 )
 
+audience = st.selectbox(
+    "Select Audience:",
+    ["General", "Students", "Professionals", "Children"]
+)
+
+formality = st.slider("Formality Level", 1, 10, 5)
+
+length = st.slider("Length Preference", 1, 10, 5)
+
 # Button
 if st.button("Rewrite Text"):
 
@@ -32,13 +42,13 @@ if st.button("Rewrite Text"):
         with st.spinner("Rewriting..."):
 
             # Prompt
-            prompt = f"""
-            Rewrite the following text in a {tone} tone.
-            Preserve the original meaning. Do not add new information.
-
-            Text:
-            {input_text}
-            """
+            prompt = build_prompt(
+                input_text,
+                tone,
+                audience,
+                formality,
+                length
+            )
 
             try:
                 # LLM API Call
