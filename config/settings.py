@@ -1,0 +1,4 @@
+SIMILARITY_THRESHOLD = 0.80
+MODEL_NAME = "gpt-4o-mini"  # or Gemini / Claude
+MAX_TOKENS = 500
+TEMPERATURE = 0.7
