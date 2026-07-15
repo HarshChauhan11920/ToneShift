@@ -1,32 +1,15 @@
-from openai import OpenAI
-from dotenv import load_dotenv
-import os
+from config.settings import MAX_TOKENS, TEMPERATURE
+from core.gemini_client import generate_text
 
-load_dotenv()
-
-client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY")
-)
 
 def rewrite_text(prompt: str):
     """
-    Sends the prompt to the OpenAI model and returns the rewritten text.
+    Sends the prompt to Gemini and returns the rewritten text.
     """
 
-    response = client.chat.completions.create(
-        model="gpt-4.1-mini",
-        messages=[
-            {
-                "role": "system",
-                "content": "You are an expert writing assistant. Rewrite text while preserving its meaning."
-            },
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ],
-        temperature=0.7,
-        max_tokens=500
+    return generate_text(
+        prompt=prompt,
+        system_instruction="You are an expert writing assistant. Rewrite text while preserving its meaning.",
+        temperature=TEMPERATURE,
+        max_tokens=MAX_TOKENS,
     )
-
-    return response.choices[0].message.content

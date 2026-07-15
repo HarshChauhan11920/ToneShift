@@ -1,28 +1,12 @@
-from sentence_transformers import SentenceTransformer
-from sklearn.metrics.pairwise import cosine_similarity
-
-# Load only once
-model = SentenceTransformer("all-MiniLM-L6-v2")
+from difflib import SequenceMatcher
 
 
-def similarity_score(text1: str, text2: str):
-    """
-    Returns cosine similarity between two texts.
-    """
+def similarity_score(text1: str, text2: str) -> float:
+    if not text1.strip() or not text2.strip():
+        return 0.0
 
-    embeddings = model.encode([text1, text2])
+    return SequenceMatcher(None, text1, text2).ratio()
 
-    score = cosine_similarity(
-        [embeddings[0]],
-        [embeddings[1]]
-    )[0][0]
-
-    return float(score)
 
 def meaning_drift(score: float, threshold: float = 0.80):
-    """
-    Determines whether the rewritten text
-    has drifted too far from the original meaning.
-    """
-
     return score < threshold
