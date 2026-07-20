@@ -1,6 +1,125 @@
-# ToneShift
+# 🎭 ToneShift — Audience-Aware Text Rewriter
 
-ToneShift is a Streamlit app that rewrites text for different audiences and checks whether the rewrite preserved the original meaning.
+ToneShift is an intelligent text rewriting web app that adapts content based on **tone, audience, formality, and length**, while ensuring the **original meaning is preserved** using semantic analysis.
+
+Built with **Streamlit + LLMs**, it provides a clean, interactive interface for transforming text in real time.
+
+---
+
+## 🚀 Features
+
+### ✨ Core Capabilities
+- 🔁 Rewrite text into multiple tones:
+  - Formal
+  - Casual
+  - Child-friendly
+  - Executive Summary
+
+- 🎯 Audience targeting:
+  - General
+  - Students
+  - Professionals
+  - Children
+
+- 🎚️ Fine control:
+  - Adjustable **formality level**
+  - Adjustable **length preference**
+
+---
+
+### 🧠 Meaning Preservation Engine
+- 🔁 **Back Translation** to verify semantic consistency  
+- 📊 **Similarity Scoring** to measure meaning retention  
+- 🚨 **Drift Detection**:
+  - ✅ Excellent preservation  
+  - ⚠️ Minor variation  
+  - ❌ Significant meaning change  
+
+---
+
+### 🔍 Smart Diff Viewer
+- Highlights exactly **what changed** between:
+  - Original text
+  - Rewritten version
+
+---
+
+### 🎨 Advanced UI/UX
+- 🌗 Dark / Light theme toggle  
+- 🧊 Glassmorphism UI (blur + transparency)  
+- 🖼️ Dynamic background images (theme-based)  
+- 📑 Tab-based layout:
+  - Rewrite
+  - Differences
+  - Analysis  
+- ⚡ Smooth interactions & loading states  
+
+---
+
+### 📦 Export & Utility
+- ⬇️ Download rewritten text  
+- 📋 Copy-ready output  
+- ⚠️ Smart error handling (API, quota, config)
+
+---
+
+## 🏗️ Project Structure
+ToneShift/
+│
+├── app.py # Main Streamlit app
+│
+├── core/
+│ ├── prompt_builder.py # Builds LLM prompts
+│ ├── rewriter.py # Calls LLM for rewriting
+│ ├── back_translation.py # Neutral re-translation
+│ └── similarity.py # Semantic similarity logic
+│
+├── utils/
+│ └── diff_highlighter.py # Highlights text differences
+│
+├── config/
+│ └── settings.py # Config constants
+│
+├── images/ # Background assets
+│ ├── dark_bg.avif
+│ └── light_bg.avif
+│
+├── .env # API keys
+└── README.md
+
+
+---
+
+## ⚙️ How It Works
+
+### Step-by-step pipeline:
+
+1. **User Input**
+   - Enter text
+   - Select tone, audience, formality, and length
+
+2. **Prompt Generation**
+   - `build_prompt()` constructs a structured instruction for the LLM
+
+3. **Text Rewriting**
+   - `rewrite_text()` generates the rewritten version
+
+4. **Difference Analysis**
+   - `highlight_differences()` shows word-level changes
+
+5. **Meaning Validation (Optional)**
+   - `back_translate()` converts rewritten text → neutral form
+   - `similarity_score()` compares with original
+   - `meaning_drift()` flags inconsistencies
+
+---
+
+## 🛠️ Installation
+
+### 1. Clone the repo
+```bash
+git clone https://github.com/yourusername/toneshift.git
+cd toneshift
 
 ## Setup
 
