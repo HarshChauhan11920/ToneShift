@@ -1,5 +1,8 @@
 import streamlit as st
 from dotenv import load_dotenv
+from io import BytesIO
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
 
 load_dotenv()
 
@@ -26,6 +29,22 @@ def get_base64_image(image_path):
 
 dark_bg = get_base64_image("images/black_bg.avif")
 light_bg = get_base64_image("images/white_bg.avif")
+
+# pdf generator
+def create_pdf(text: str) -> bytes:
+    buffer = BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=A4)
+
+    text_object = pdf.beginText(50, 800)
+    text_object.setFont("Helvetica", 12)
+
+    for line in text.splitlines():
+        text_object.textLine(line)
+
+    pdf.drawText(text_object)
+    pdf.save()
+
+    return buffer.getvalue()
 
 # =========================
 # 🌗 THEME STATE
@@ -208,13 +227,14 @@ if rewrite_clicked:
                     colA, colB = st.columns(2)
 
                     with colA:
-                        st.download_button(
-                            "⬇️ Download",
-                            data=rewritten_text,
-                            file_name="rewritten.txt",
-                            mime="text/plain",
-                        )
+                        pdf_data = create_pdf(rewritten_text)
 
+                        st.download_button(
+                            "⬇️ Download PDF",
+                            data=pdf_data,
+                            file_name="rewritten.pdf",
+                            mime="application/pdf",
+                        )
                     with colB:
                         st.button("📋 Copy (Ctrl+C)")
 
