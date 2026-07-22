@@ -2,17 +2,21 @@ from config.settings import MAX_TOKENS
 from core.gemini_client import generate_text
 
 
-def back_translate(text: str):
-    """
-    Converts rewritten text back into a neutral version
-    so that it can be compared with the original.
-    """
-
+def back_translate(text: str, source_language: str = "English") -> str:
+    """Translate a rewrite back to neutral English for cross-language validation."""
     return generate_text(
-        prompt=text,
+        prompt=f"""
+Source language: {source_language}
+
+<rewritten_text>
+{text}
+</rewritten_text>
+""",
         system_instruction=(
-            "You are an expert editor. Rewrite the given text into a completely neutral tone "
-            "without changing its meaning."
+            "You are a precise translator and editor. Translate the supplied rewritten text "
+            "into neutral English. If it is already in English, produce a neutral English "
+            "restatement instead. Preserve every fact, qualifier, and intended meaning. "
+            "Return only the English back-translation, with no labels or commentary."
         ),
         temperature=0.2,
         max_tokens=MAX_TOKENS,

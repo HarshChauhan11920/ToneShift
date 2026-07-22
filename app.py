@@ -12,11 +12,11 @@ st.set_page_config(
     layout="wide"
 )
 
-from config.settings import SIMILARITY_THRESHOLD
+from config.settings import SIMILARITY_THRESHOLD, SUPPORTED_LANGUAGES
 from core.back_translation import back_translate
 from core.prompt_builder import build_prompt
 from core.rewriter import rewrite_text
-from core.similarity import meaning_drift, similarity_score
+from core.similarity import meaning_drift, semantic_similarity_score
 from utils.diff_highlighter import highlight_differences
 
 
@@ -158,6 +158,12 @@ with st.sidebar:
         ["Formal", "Casual", "Child-friendly", "Executive Summary"],
     )
 
+    output_language = st.selectbox(
+        "Output language",
+        SUPPORTED_LANGUAGES,
+        help="The rewritten text will be generated entirely in this language.",
+    )
+
     audience = st.selectbox(
         "Audience",
         ["General", "Students", "Professionals", "Children"],
@@ -180,9 +186,10 @@ st.markdown('<div class="glass">', unsafe_allow_html=True)
 st.subheader("📝 Input Text")
 
 input_text = st.text_area(
-    "",
+    "Text to rewrite",
     height=180,
-    placeholder="Paste your text here..."
+    placeholder="Paste your text here...",
+    label_visibility="collapsed",
 )
 
 rewrite_clicked = st.button("✨ Rewrite")
@@ -199,7 +206,14 @@ if rewrite_clicked:
     else:
         with st.spinner("✨ Rewriting... please wait"):
             try:
-                prompt = build_prompt(input_text, tone, audience, formality, length)
+                prompt = build_prompt(
+                    input_text,
+                    tone,
+                    audience,
+                    formality,
+                    length,
+                    output_language,
+                )
                 rewritten_text = rewrite_text(prompt)
 
                 st.divider()
@@ -221,6 +235,7 @@ if rewrite_clicked:
                     with col2:
                         st.markdown('<div class="glass">', unsafe_allow_html=True)
                         st.subheader(f"✨ Rewritten ({tone})")
+                        st.caption(f"Tone: {tone} | Language: {output_language}")
                         st.write(rewritten_text)
                         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -244,6 +259,11 @@ if rewrite_clicked:
                 with tab2:
                     st.markdown('<div class="glass">', unsafe_allow_html=True)
                     st.subheader("🔍 Differences")
+                    if output_language != "English":
+                        st.caption(
+                            "This word-level view compares the original with the translated output. "
+                            "Use Analysis for the English back-translation and semantic similarity check."
+                        )
                     diff_html = highlight_differences(input_text, rewritten_text)
                     st.markdown(diff_html, unsafe_allow_html=True)
                     st.markdown('</div>', unsafe_allow_html=True)
@@ -253,14 +273,15 @@ if rewrite_clicked:
                 # =========================
                 with tab3:
                     if include_analysis:
-                        back_text = back_translate(rewritten_text)
-                        score = similarity_score(input_text, back_text)
+                        back_text = back_translate(rewritten_text, output_language)
+                        score = semantic_similarity_score(input_text, back_text)
 
                         col3, col4 = st.columns(2)
 
                         with col3:
                             st.markdown('<div class="glass">', unsafe_allow_html=True)
                             st.subheader("🔁 Back Translation")
+                            st.caption("The rewritten text translated into neutral English for comparison.")
                             st.write(back_text)
                             st.markdown('</div>', unsafe_allow_html=True)
 
@@ -268,9 +289,12 @@ if rewrite_clicked:
                             st.markdown('<div class="glass">', unsafe_allow_html=True)
                             st.subheader("📊 Similarity")
 
-                            st.metric("Score", f"{score:.2f}")
+                            st.metric("Semantic similarity", f"{score:.2f}")
+                            st.caption(
+                                "Calculated by comparing the original text with the English back-translation."
+                            )
 
-                            if not meaning_drift(score, SIMILARITY_THRESHOLD + 0.9):
+                            if not meaning_drift(score, SIMILARITY_THRESHOLD + 0.10):
                                 st.success("Excellent preservation")
                                 st.progress(95)
                             elif not meaning_drift(score, SIMILARITY_THRESHOLD):

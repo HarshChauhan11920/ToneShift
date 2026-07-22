@@ -1,19 +1,6 @@
-def build_prompt(text, tone, audience, formality, length):
-    """
-    Builds a structured prompt for the LLM.
-
-    Parameters:
-    - text (str): Input text
-    - tone (str): Desired tone
-    - audience (str): Target audience
-    - formality (int): 1–10
-    - length (int): 1–10
-
-    Returns:
-    - str: formatted prompt
-    """
-
-    prompt = f"""
+def build_prompt(text, tone, audience, formality, length, language="English"):
+    """Build a rewrite prompt for the requested output language."""
+    return f"""
 You are an expert text rewriter.
 
 Rewrite the following text based on:
@@ -21,15 +8,18 @@ Rewrite the following text based on:
 - Audience: {audience}
 - Formality level: {formality}/10
 - Length preference: {length}/10
+- Output language: {language}
 
 Guidelines:
-- Preserve the original meaning strictly
-- Do NOT add new facts or remove key information
-- Adjust vocabulary, sentence structure, and clarity
-- Make it appropriate for the specified audience
+- Preserve the original meaning strictly.
+- Do not add new facts or remove key information.
+- Adjust vocabulary, sentence structure, and clarity.
+- Make it appropriate for the specified audience.
+- Write the complete rewritten text in {language}.
+- Return only the rewritten text; do not add a title, notes, or an explanation.
 
-Text:
+Source text:
+<source_text>
 {text}
+</source_text>
 """
-
-    return prompt

@@ -4,6 +4,13 @@ ToneShift is an intelligent text rewriting web app that adapts content based on 
 
 Built with **Streamlit + LLMs**, it provides a clean, interactive interface for transforming text in real time.
 
+## Multilingual output
+
+Choose an output language in the sidebar (English is the default). ToneShift rewrites the
+text fully in that language, then translates the result back to neutral English and measures
+semantic similarity against the original text. This keeps meaning-preservation checks useful
+even when the rewritten text uses a different language or script.
+
 ---
 
 ## 🚀 Features
@@ -96,7 +103,7 @@ ToneShift/
 
 1. **User Input**
    - Enter text
-   - Select tone, audience, formality, and length
+   - Select tone, output language, audience, formality, and length
 
 2. **Prompt Generation**
    - `build_prompt()` constructs a structured instruction for the LLM
@@ -108,8 +115,8 @@ ToneShift/
    - `highlight_differences()` shows word-level changes
 
 5. **Meaning Validation (Optional)**
-   - `back_translate()` converts rewritten text → neutral form
-   - `similarity_score()` compares with original
+   - `back_translate()` converts rewritten text → neutral English
+   - `semantic_similarity_score()` compares the original with the English back-translation
    - `meaning_drift()` flags inconsistencies
 
 ---
